@@ -1,11 +1,11 @@
 import { SquareValue, GameDifficulty, GameState } from "./types"
 import { easyAi, mediumAi, hardAi } from "./ai"
 
-export const calculateNextValue = (squares: SquareValue[]): SquareValue => {
+export const getNextValue = (squares: SquareValue[]): SquareValue => {
   return squares.filter(Boolean).length % 2 === 0 ? "X" : "O"
 }
 
-export const calculateWinner = (squares: SquareValue[]): GameState => {
+export const getGameState = (squares: SquareValue[]): GameState => {
   const winningLines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -35,18 +35,18 @@ export const calculateWinner = (squares: SquareValue[]): GameState => {
   return GameState.InProgress;
 };
 
-export const calculateStatus = (nextValue: SquareValue, winner: GameState) => {
+export const getStatus = (nextValue: SquareValue, gameState: GameState) => {
   switch (true) {
-    case winner == GameState.Tie:
+    case gameState == GameState.Tie:
       return "Cats Game"
-    case winner == GameState.PlayerOne || winner == GameState.PlayerTwo:
-      return `${winner} Wins!`
+    case gameState == GameState.PlayerOne || gameState == GameState.PlayerTwo:
+      return `${gameState} Wins!`
     default:
       return `${nextValue}'s Turn...`
   }
 }
 
-export const calculateAi = (squares: SquareValue[], difficulty: GameDifficulty): number => {
+export const getAiMove = (squares: SquareValue[], difficulty: GameDifficulty): number => {
   switch (difficulty) {
     case GameDifficulty.Easy:
       return easyAi(squares);

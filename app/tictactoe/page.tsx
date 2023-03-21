@@ -1,7 +1,7 @@
 'use client'
 import { useTicTacToe } from './useTicTacToe'
 import styles from "./page.module.css"
-import { GameDifficulty, GameState } from './types';
+import { GameState } from './types';
 
 export default function Home() {
   const {
@@ -10,37 +10,26 @@ export default function Home() {
     twoPlayers,
     setTwoPlayers,
     squares,
-    setSquares,
     difficulty,
-    setDifficulty,
-    winner,
+    gameState,
     status,
     setSquare,
+    resetSquares,
+    changeDifficulty,
     gameLoop,
   } = useTicTacToe();
 
   gameLoop()
 
   const renderSquare = (square: string | null, index: number) => {
-    return <button key={index} onClick={() => { setSquare(index) }}>{square}</button >
-  }
-
-  const resetSquares = () => {
-    setSquares(Array(9).fill(null))
-  }
-
-  const changeDifficulty = () => {
-    switch (difficulty) {
-      case GameDifficulty.Easy:
-        setDifficulty(GameDifficulty.Medium)
-        break;
-      case GameDifficulty.Medium:
-        setDifficulty(GameDifficulty.Hard)
-        break;
-      default:
-        setDifficulty(GameDifficulty.Easy)
-        break;
-    }
+    return (
+      <button
+        key={index}
+        onClick={() => { setSquare(index) }}
+      >
+        {square}
+      </button >
+    )
   }
 
   return (
@@ -53,15 +42,36 @@ export default function Home() {
           })}
         </div>
         <div className={styles.column}>
-          <button className={styles.settings} onClick={() => setShowSettings(!showSettings)}>Settings</button>
+          <button
+            className={styles.settings}
+            onClick={() => setShowSettings(!showSettings)}
+          >
+            Settings
+          </button>
           {
             showSettings &&
-            <button className={styles.players} onClick={() => setTwoPlayers(!twoPlayers)}>Players: {+twoPlayers + 1}</button>
+            <button
+              className={styles.players}
+              onClick={() => setTwoPlayers(!twoPlayers)}
+            >
+              Players: {+twoPlayers + 1}
+            </button>
           }{
             showSettings && !twoPlayers &&
-            < button className={styles.difficulty} onClick={() => changeDifficulty()}>Difficulty: {difficulty}</button>
+            <button
+              className={styles.difficulty}
+              onClick={() => changeDifficulty()}
+            >
+              Difficulty: {difficulty}
+            </button>
           }
-          {winner != GameState.InProgress && <button className={styles.reset} onClick={() => resetSquares()}>Reset Game</button>}
+          {gameState != GameState.InProgress &&
+            <button
+              className={styles.reset}
+              onClick={() => resetSquares()}
+            >
+              Reset Game
+            </button>}
         </div>
       </div>
     </div>

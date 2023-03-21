@@ -1,5 +1,5 @@
-import { SquareValue, GameScore, GameState } from "./types"; 
-import { calculateWinner, calculateNextValue } from "./utils";
+import { SquareValue, GameScore, GameState } from "./types";
+import { getGameState, getNextValue } from "./utils";
 
 export const easyAi = (squares: SquareValue[]): number => {
   let availableMoves: number[] = [];
@@ -14,50 +14,47 @@ export const easyAi = (squares: SquareValue[]): number => {
 export const mediumAi = (
   squares: SquareValue[],
 ): number => {
-  const randomMoveProbability = 0.35; // 35% chance to make a random move
+  const easyAiProbability = 0.35; // 35% chance to make a random move
 
-  if (Math.random() < randomMoveProbability) {
+  if (Math.random() < easyAiProbability) {
     return easyAi(squares)
   }
   return hardAi(squares);
 };
 
-export const hardAi = (
-  squares: SquareValue[],
-  firstLoop = true,
-  depth = 0,
-  alpha = -Infinity,
-  beta = Infinity,
-): number => {
-  const value = calculateNextValue(squares);
-  const isX = value === "X";
-  let bestScore = isX ? -Infinity : Infinity;
-  let bestMove: number | undefined;
+export const hardAi = (squares: SquareValue[]): number => {
+  const maximizingPlayer = getNextValue(squares) === GameState.PlayerOne;
+  const [bestMove] = getNextMove(squares, maximizingPlayer, 0, -Infinity, Infinity);
+  return bestMove;
+};
 
- const gameStatus = calculateWinner(squares);
-  if (gameStatus != GameState.InProgress) {
-    return getScore(gameStatus, depth);
-  }
+const getNextMove = (
+  squares: SquareValue[],
+  maximizingPlayer: boolean,
+  depth: number,
+  alpha: number,
+  beta: number,
+): [number, number] => {
+  let bestScore = maximizingPlayer ? -Infinity : Infinity;
+  let bestMove: number | undefined;
 
   for (let index = 0; index < squares.length; index++) {
     const square = squares[index];
     if (!square) {
-      squares[index] = value;
-
-      let score = hardAi(squares, false, depth + 1, alpha, beta);
-
+      squares[index] = maximizingPlayer ? GameState.PlayerOne : GameState.PlayerTwo;
+      const score = minimax(squares, !maximizingPlayer, depth + 1, alpha, beta);
       squares[index] = null;
 
-      const scoringAction = isX ? score > bestScore : score < bestScore;
-
-      if (scoringAction) {
+      if (maximizingPlayer ? score > bestScore : score < bestScore) {
         bestScore = score;
         bestMove = index;
       }
 
-      isX ?
-        alpha = Math.max(alpha, bestScore) :
+      if (maximizingPlayer) {
+        alpha = Math.max(alpha, bestScore);
+      } else {
         beta = Math.min(beta, bestScore);
+      }
 
       if (alpha >= beta) {
         break;
@@ -65,11 +62,27 @@ export const hardAi = (
     }
   }
 
-  return firstLoop ? bestMove as number : bestScore;
+  return [bestMove as number, bestScore];
 };
 
-const getScore = (gameStatus: GameState, depth: number): number => {
-  switch (gameStatus) {
+const minimax = (
+  squares: SquareValue[],
+  maximizingPlayer: boolean,
+  depth: number,
+  alpha: number,
+  beta: number,
+): number => {
+  const gameState = getGameState(squares);
+  if (gameState !== GameState.InProgress) {
+    return getScore(gameState, depth);
+  }
+
+  const [, bestScore] = getNextMove(squares, maximizingPlayer, depth, alpha, beta);
+  return bestScore;
+};
+
+const getScore = (gameState: GameState, depth: number): number => {
+  switch (gameState) {
     case GameState.PlayerOne:
       return GameScore.PlayerOne / depth;
     case GameState.PlayerTwo:
@@ -77,6 +90,6 @@ const getScore = (gameStatus: GameState, depth: number): number => {
     case GameState.Tie:
       return GameScore.Tie;
     default:
-      throw new Error(`Invalid game status: ${gameStatus}`);
+      throw new Error(`Invalid game status: ${gameState}`);
   }
 };

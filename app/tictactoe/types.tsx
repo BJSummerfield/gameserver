@@ -1,4 +1,4 @@
-export type SquareValue = "X" | "O" | null;
+export type SquareValue = GameState.PlayerOne | GameState.PlayerTwo | null;
 
 export enum GameDifficulty {
   Easy = "Easy",
