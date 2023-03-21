@@ -1,0 +1,131 @@
+.container {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  height: 100%;
+}
+
+.column {
+  flex-direction: column;
+  display: flex;
+}
+
+.board {
+  display: grid;
+  grid: repeat(3, 100px) / auto-flow 100px;
+  gap: 5px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.board > button {
+  margin-top: 0;
+  font-size: 30px;
+  font-weight: 700;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.board > button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.board > button:active {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(0);
+}
+
+.status {
+  padding-top: 20px;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.settings,
+.players,
+.difficulty,
+.reset {
+  font-size: 16px;
+  font-weight: 700;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  margin-top: 10px;
+}
+
+.settings:hover,
+.players:hover,
+.difficulty:hover,
+.reset:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.settings:active,
+.players:active,
+.difficulty:active,
+.reset:active {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .board {
+    grid: repeat(3, 80px) / auto-flow 80px;
+  }
+
+  .board > button {
+    font-size: 24px;
+  }
+
+  .status {
+    font-size: 20px;
+  }
+
+  .settings,
+  .players,
+  .difficulty,
+  .reset {
+    font-size: 14px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .board {
+    grid: repeat(3, 60px) / auto-flow 60px;
+  }
+
+  .board > button {
+    font-size: 18px;
+  }
+
+  .status {
+    font-size: 16px;
+  }
+
+  .settings,
+  .players,
+  .difficulty,
+  .reset {
+    font-size: 12px;
+    padding: 6px;
+  }
+}
