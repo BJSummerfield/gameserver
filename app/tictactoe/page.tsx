@@ -3,7 +3,7 @@ import { useTicTacToe } from './useTicTacToe'
 import styles from "./page.module.css"
 import { GameState } from './types';
 
-export default function Home() {
+export default function TicTacToe() {
   const {
     showSettings,
     setShowSettings,
