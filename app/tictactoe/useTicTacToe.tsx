@@ -44,7 +44,7 @@ export const useTicTacToe = () => {
   }
 
   const gameLoop = () => {
-    if (!twoPlayers && nextValue === "O" && gameState == GameState.InProgress) {
+    if (!twoPlayers && nextValue === GameState.PlayerTwo && gameState == GameState.InProgress) {
       const index = getAiMove([...squares], difficulty);
       setSquare(index);
     }
