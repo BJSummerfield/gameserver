@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import Pit from './Pit';
 import { initialPits } from './utils';
 import styles from './page.module.css'
-
-enum GameState {
-  PlayerOne = 0,
-  PlayerTwo = 1,
-  InProgress = 2,
-}
+import { GameState } from './types'
 
 const Board: React.FC = () => {
   const [activePlayer, setActivePlayer] = useState<number>(GameState.PlayerOne)
