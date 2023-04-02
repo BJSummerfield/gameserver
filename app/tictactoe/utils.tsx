@@ -35,26 +35,33 @@ export const getGameState = (squares: SquareValue[]): GameState => {
   return GameState.InProgress;
 };
 
-export const getStatus = (nextValue: SquareValue, gameState: GameState) => {
-  switch (true) {
-    case gameState == GameState.Tie:
-      return "Cats Game"
-    case gameState == GameState.PlayerOne || gameState == GameState.PlayerTwo:
-      return `${gameState} Wins!`
-    default:
-      return `${nextValue}'s Turn...`
-  }
+interface Status<T extends GameState> {
+  (nextValue: SquareValue, gameState: T): string;
 }
 
-export const getAiMove = (squares: SquareValue[], difficulty: GameDifficulty): number => {
-  switch (difficulty) {
-    case GameDifficulty.Easy:
-      return easyAi(squares);
-    case GameDifficulty.Medium:
-      return mediumAi(squares);
-    case GameDifficulty.Hard:
-      return hardAi(squares);
-  }
+export const getStatus: Status<GameState> = (nextValue, gameState) => {
+  return gameStateMessages[gameState](gameState, nextValue);
+};
+
+const gameStateMessages: Record<GameState, (gameState: GameState, nextValue: SquareValue) => string> = {
+  [GameState.Tie]: () => 'Cats Game',
+  [GameState.PlayerOne]: (gameState) => `${gameState} Wins!`,
+  [GameState.PlayerTwo]: (gameState) => `${gameState} Wins!`,
+  [GameState.InProgress]: (_, nextValue) => `${nextValue}'s Turn...`,
+};
+
+interface AiMove<T extends GameDifficulty> {
+  (squares: SquareValue[], difficulty: T): number;
+}
+
+const aiMoveFunctions: Record<GameDifficulty, (squares: SquareValue[]) => number> = {
+  [GameDifficulty.Easy]: easyAi,
+  [GameDifficulty.Medium]: mediumAi,
+  [GameDifficulty.Hard]: hardAi,
+};
+
+export const getAiMove: AiMove<GameDifficulty> = (squares, difficulty) => {
+  return aiMoveFunctions[difficulty](squares);
 };
 
 
