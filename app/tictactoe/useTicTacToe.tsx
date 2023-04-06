@@ -29,19 +29,15 @@ export const useTicTacToe = () => {
     setSquares(Array(9).fill(null))
   }
 
+  const difficultyTransitions = {
+    [GameDifficulty.Easy]: GameDifficulty.Medium,
+    [GameDifficulty.Medium]: GameDifficulty.Hard,
+    [GameDifficulty.Hard]: GameDifficulty.Easy,
+  };
+
   const changeDifficulty = () => {
-    switch (difficulty) {
-      case GameDifficulty.Easy:
-        setDifficulty(GameDifficulty.Medium)
-        break;
-      case GameDifficulty.Medium:
-        setDifficulty(GameDifficulty.Hard)
-        break;
-      default:
-        setDifficulty(GameDifficulty.Easy)
-        break;
-    }
-  }
+    setDifficulty(difficultyTransitions[difficulty] || GameDifficulty.Easy);
+  };
 
   const gameLoop = () => {
     if (!twoPlayers && nextValue === GameState.PlayerTwo && gameState == GameState.InProgress) {
