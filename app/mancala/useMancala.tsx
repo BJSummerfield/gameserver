@@ -7,6 +7,7 @@ import {
   distributeStones,
   handleEmptyPlayerPit,
   checkWinner,
+  handleWinner,
 } from './utils';
 export const useMancala = () => {
   const [totalPits] = useState<number>(6)
@@ -21,30 +22,30 @@ export const useMancala = () => {
     [GameState.PlayerTwo]: totalPits * 2 + 1,
   }
 
-  const selectPit = (index: number) => {
-    //Early return if game is over
-    if (gameState === GameState.GameOver) return
 
-    if (pits[index] != 0 && isValidPit(totalPits, gameState, index)) {
-      const newPits = [...pits]
-      const lastIndex = distributeStones(index, newPits, mancalaPits, gameState, totalPits)
-      handleEmptyPlayerPit(
-        newPits,
-        totalPits,
-        lastIndex,
-        mancalaPits,
-        gameState
-      )
-      if (lastIndex != mancalaPits[gameState]) {
-        setGameState(1 - gameState)
-      }
-      const isGameOver = checkWinner(newPits, totalPits, mancalaPits, gameState)
-      if (isGameOver) {
-        setGameState(GameState.GameOver)
-      }
-      setPits(newPits)
+const selectPit = (index: number) => {
+  // Early return if game is over
+  if (gameState === GameState.GameOver) return;
+
+  if (pits[index] !== 0 && isValidPit(totalPits, gameState, index)) {
+    const { newPits: distributedPits, lastIndex } = distributeStones(index, pits, mancalaPits, gameState, totalPits);
+    const updatedPits = handleEmptyPlayerPit(distributedPits, totalPits, lastIndex, mancalaPits, gameState);
+
+    if (lastIndex !== mancalaPits[gameState]) {
+      setGameState(1 - gameState);
+    }
+
+    const winner = checkWinner(updatedPits, totalPits, gameState);
+    if (winner !== null) {
+      const finalPits = handleWinner(updatedPits, totalPits, mancalaPits, winner);
+      setPits(finalPits);
+      setGameState(GameState.GameOver);
+    } else {
+      setPits(updatedPits);
     }
   }
+};
+
   return {
     mancalaPits,
     rows,

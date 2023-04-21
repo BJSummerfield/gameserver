@@ -9,25 +9,6 @@ export const splitPits = (pits: number[], totalPits: number) => {
   return { [GameState.PlayerTwo]: topPits, [GameState.PlayerOne]: bottomPits }
 }
 
-export const checkWinner = (pits: number[], totalPits: number, mancalaPits: MancalaPits, gameState: GameState) => {
-  const rows: Rows = splitPits(pits, totalPits);
-  const currentPlayerRowsEmpty = rows[gameState].every((pit) => pit === 0);
-  if (currentPlayerRowsEmpty) {
-    handleWinner(pits, totalPits, mancalaPits, gameState);
-    return true;
-  }
-  return false;
-};
-
-const handleWinner = (pits: number[], totalPits: number, mancalaPits: MancalaPits, gameState: GameState) => {
-  for (let index = 0; index < pits.length; index++) {
-    if (isValidPit(totalPits, 1 - gameState, index)) {
-      pits[mancalaPits[1 - gameState]] += pits[index]
-      pits[index] = 0
-    }
-  }
-}
-
 export const isValidPit = (totalPits: number, gameState: GameState, index: number) => {
   switch (gameState) {
     case GameState.PlayerOne:
@@ -39,6 +20,29 @@ export const isValidPit = (totalPits: number, gameState: GameState, index: numbe
   }
 }
 
+export const checkWinner = (pits: number[], totalPits: number, gameState: GameState) => {
+  const rows: Rows = splitPits(pits, totalPits);
+  const currentPlayerRowsEmpty = rows[gameState].every((pit) => pit === 0);
+  if (currentPlayerRowsEmpty) {
+    return gameState;
+  }
+  return null;
+};
+
+
+export const handleWinner = (pits: number[], totalPits: number, mancalaPits: MancalaPits, winner: GameState) => {
+  const newPits = [...pits];
+  const loser = 1 - winner
+
+  for (let index = 0; index < newPits.length; index++) {
+    if (isValidPit(totalPits, loser, index)) {
+      newPits[mancalaPits[loser]] += newPits[index];
+      newPits[index] = 0;
+    }
+  }
+  return newPits;
+};
+
 export const distributeStones = (
   index: number,
   pits: number[],
@@ -47,7 +51,8 @@ export const distributeStones = (
   totalPits: number
 ) => {
   let stones = pits[index];
-  pits[index] = 0;
+  const newPits = [...pits];
+  newPits[index] = 0;
 
   let currentIndex = index;
   while (stones > 0) {
@@ -56,12 +61,13 @@ export const distributeStones = (
 
     // Skip opponent's Mancala pit
     if (currentIndex !== mancalaPits[1 - gameState]) {
-      pits[currentIndex]++;
+      newPits[currentIndex]++;
       stones--;
     }
   }
-  return currentIndex
-}
+  return { newPits, lastIndex: currentIndex };
+};
+
 
 export const handleEmptyPlayerPit = (
   pits: number[],
@@ -70,19 +76,23 @@ export const handleEmptyPlayerPit = (
   mancalaPits: MancalaPits,
   gameState: GameState
 ) => {
+  const newPits = [...pits];
   if (
-    isValidPit(totalPits, gameState, index)
-    &&
-    pits[index] == 1
+    isValidPit(totalPits, gameState, index) &&
+    pits[index] === 1
   ) {
-    const inverseIndex = getInversePit(totalPits, index)
-    captureInverseIndex(pits, index, inverseIndex, mancalaPits[gameState])
+    const inverseIndex = getInversePit(totalPits, index);
+    const { capturedPits } = captureInverseIndex(pits, index, inverseIndex, mancalaPits[gameState]);
+    return capturedPits;
   }
-}
+  return newPits;
+};
+
 
 const getInversePit = (totalPits: number, index: number) => {
   return Math.abs(index - (totalPits * 2))
 }
+
 
 const captureInverseIndex = (
   pits: number[],
@@ -90,9 +100,12 @@ const captureInverseIndex = (
   inverseIndex: number,
   targetMancala: number
 ) => {
-  const totalStones = pits[currentIndex] + pits[inverseIndex]
-  pits[currentIndex] = 0
-  pits[inverseIndex] = 0
-  pits[targetMancala] += totalStones
-}
+  const newPits = [...pits];
+  const totalStones = newPits[currentIndex] + newPits[inverseIndex];
+  newPits[currentIndex] = 0;
+  newPits[inverseIndex] = 0;
+  newPits[targetMancala] += totalStones;
+  return { capturedPits: newPits };
+};
+
 

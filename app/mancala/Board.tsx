@@ -15,11 +15,8 @@ const Board: React.FC = () => {
   } = useMancala()
 
   const handlePitClick = (index: number) => {
-    console.log(index)
     selectPit(index) 
   };
- console.log(rows)
-console.log(pits)
   return (
     <div className={styles.board}>
       <div className={`${styles.mancala} ${styles.mancalaLeft}`}>{pits[mancalaPits[GameState.PlayerTwo]]}</div>
