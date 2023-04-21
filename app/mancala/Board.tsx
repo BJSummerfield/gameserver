@@ -1,22 +1,28 @@
 import React from 'react';
 import Pit from './Pit';
-import { useMancala } from './useMancala'
 import styles from './page.module.css'
-import { GameState } from './types'
+import { GameState, MancalaPits, Rows } from './types'
 
-const Board: React.FC = () => {
- const {
-    mancalaPits,
-    rows,
-    pits,
-    gameState,
-    selectPit,
-    totalPits,
-  } = useMancala()
+interface BoardProps {
+  pits: number[];
+  rows: Rows;
+  selectPit: (index:number) => void;
+  mancalaPits: MancalaPits;
+  totalPits: number;
+}
+
+const Board: React.FC<BoardProps> = ({
+  pits,
+  rows,
+  selectPit,
+  mancalaPits,
+  totalPits
+}) => {
 
   const handlePitClick = (index: number) => {
     selectPit(index) 
   };
+
   return (
     <div className={styles.board}>
       <div className={`${styles.mancala} ${styles.mancalaLeft}`}>{pits[mancalaPits[GameState.PlayerTwo]]}</div>

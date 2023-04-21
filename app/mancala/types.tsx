@@ -11,3 +11,7 @@ export interface MancalaPits {
 export interface Rows {
   [key: number]: number[]
 }
+
+export type StatusMessagesType = {
+  [key in GameState]: string;
+};
