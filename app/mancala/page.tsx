@@ -11,8 +11,11 @@ export default function Mancala() {
     rows,
     pits,
     selectPit,
+    gameLoop,
     totalPits,
   } = useMancala()
+  
+  gameLoop()
 
   return (
     <div className={styles.container}>
