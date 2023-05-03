@@ -9,10 +9,10 @@ import {
   checkWinner,
   handleWinner,
 } from './utils';
-import { findBestMove } from './ai';
+import { getNextMove } from './ai';
 
 export const useMancala = () => {
-  const [totalPits] = useState<number>(3)
+  const [totalPits] = useState<number>(2)
   const [startingStones] = useState<number>(4)
   const [pits, setPits] = useState<number[]>(initialPits(totalPits, startingStones));
   const [gameState, setGameState] = useState<number>(GameState.PlayerOne)
@@ -29,7 +29,7 @@ export const useMancala = () => {
 
     if (pits[index] !== 0 && isValidPit(totalPits, gameState, index)) {
       const { newPits: distributedPits, lastIndex } = distributeStones(index, pits, mancalaPits, gameState, totalPits);
-      const updatedPits = handleEmptyPlayerPit(distributedPits, totalPits, lastIndex, mancalaPits, gameState);
+      const {newPits: updatedPits} = handleEmptyPlayerPit(distributedPits, totalPits, lastIndex, mancalaPits, gameState);
 
       if (lastIndex !== mancalaPits[gameState]) {
         setGameState(1 - gameState);
@@ -66,11 +66,11 @@ export const useMancala = () => {
     // if (!twoPlayers && nextValue === GameState.PlayerTwo && gameState == GameState.InProgress) {
     if (gameState != GameState.GameOver && gameState != GameState.PlayerOne) {
       //// START HERE TOMORROW YOU NEED TO GET AI TO MAKE A Move
-      const index = findBestMove(gameState, pits, mancalaPits, totalPits);
-      console.log(index)
+      const [index,] = getNextMove(gameState, pits, mancalaPits, totalPits);
+      // console.log(index)
       selectPit(index);
     } else {
-      console.log("PlayerOne", findBestMove(gameState, pits, mancalaPits, totalPits))
+      console.log("PlayerOne", getNextMove(gameState, pits, mancalaPits, totalPits))
     }
   };
 

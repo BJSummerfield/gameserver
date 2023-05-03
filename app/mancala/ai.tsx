@@ -6,39 +6,18 @@ import {
   handleEmptyPlayerPit,
 } from './utils'
 
-const minimax = (depth: number, maxDepth: number, gameState: GameState, pits: number[], mancalaPits: MancalaPits, totalPits: number, isMaximizingPlayer: boolean) => {
-  // Base case: Check for game over or reached maximum depth
-  if (depth === maxDepth || checkWinner(pits, totalPits, gameState)) {
-    return evaluateScore(gameState, pits, mancalaPits);
-  }
-
-  const validMoves = getPossibleMoves(gameState, pits, totalPits);
-  if (isMaximizingPlayer) {
-    let bestValue = -Infinity;
-
-    for (const move of validMoves) {
-      const newPits = makeMove(move, pits, mancalaPits, gameState, totalPits);
-      const currentValue = minimax(depth + 1, maxDepth, 1 - gameState, newPits, mancalaPits, totalPits, false);
-      bestValue = Math.max(bestValue, currentValue);
-    }
-
-    return bestValue;
-  } else {
-    let bestValue = Infinity;
-
-    for (const move of validMoves) {
-      const newPits = makeMove(move, pits, mancalaPits, gameState, totalPits);
-      const currentValue = minimax(depth + 1, maxDepth, 1 - gameState, newPits, mancalaPits, totalPits, true);
-      bestValue = Math.min(bestValue, currentValue);
-    }
-
-    return bestValue;
-  }
-};
+const getMaximizingPlayer = (gameState: GameState) => {
+  return gameState == GameState.PlayerTwo
+}
 
 const evaluateScore = (gameState: GameState, pits: number[], mancalaPits: MancalaPits) => {
-  const score = pits[mancalaPits[gameState]] - pits[mancalaPits[1 - gameState]];
-  return score;
+  const isMaximizingPlayer = getMaximizingPlayer(gameState)
+// 5 - 8 - 5
+  // if (isMaximizingPlayer) {
+    return pits[mancalaPits[gameState]] - pits[mancalaPits[1 - gameState]]
+  // } else {
+    // return pits[mancalaPits[1 - gameState]] - pits[mancalaPits[gameState]]
+  // }
 };
 
 const getPossibleMoves = (gameState: GameState, pits: number[], totalPits: number) => {
@@ -49,24 +28,59 @@ const getPossibleMoves = (gameState: GameState, pits: number[], totalPits: numbe
 
 const makeMove = (index: number, pits: number[], mancalaPits: MancalaPits, gameState: GameState, totalPits: number) => {
   const newPits = [...pits];
-  const { newPits: updatedPits, lastIndex} = distributeStones(index, newPits, mancalaPits, gameState, totalPits);
-  const handledPits = handleEmptyPlayerPit(updatedPits, totalPits, lastIndex, mancalaPits, gameState);
-  return handledPits;
+  const { newPits: updatedPits, lastIndex } = distributeStones(index, newPits, mancalaPits, gameState, totalPits);
+  const { newPits: handledPits, wasEmpty } = handleEmptyPlayerPit(updatedPits, totalPits, lastIndex, mancalaPits, gameState);
+  return { handledPits, wasEmpty };
 };
 
-export const findBestMove = (gameState: GameState, pits: number[], mancalaPits: MancalaPits, totalPits: number, maxDepth = 15) => {
-  const validMoves = getPossibleMoves(gameState, pits, totalPits);
-  let bestValue = -Infinity;
-  let bestMove = -1;
+export const getNextMove = (
+  gameState: GameState,
+  pits: number[],
+  mancalaPits: MancalaPits,
+  totalPits: number,
+  depth = 0,
+  alpha = -Infinity,
+  beta = Infinity
+) => {
+  const isMaximizingPlayer = getMaximizingPlayer(gameState)
+  let bestScore = isMaximizingPlayer ? -Infinity : Infinity
+  let bestMove: number | undefined
+  const validMoves = getPossibleMoves(gameState, pits, totalPits)
 
   for (const move of validMoves) {
-    const newPits = makeMove(move, pits, mancalaPits, gameState, totalPits);
-    const currentValue = minimax(0, maxDepth, 1 - gameState, newPits, mancalaPits, totalPits, false);
-    if (currentValue > bestValue) {
-      bestValue = currentValue;
+    const { handledPits: newPits, wasEmpty } = makeMove(move, pits, mancalaPits, gameState, totalPits);
+    const score = minimax(gameState, wasEmpty, newPits, totalPits, mancalaPits, depth + 1, alpha, beta);
+
+
+    if (isMaximizingPlayer ? score > bestScore : score < bestScore) {
+      bestScore = score;
       bestMove = move;
     }
-  }
 
-  return bestMove;
-};
+    if (isMaximizingPlayer) {
+      alpha = Math.max(alpha, bestScore);
+    } else {
+      beta = Math.min(beta, bestScore);
+    }
+
+    console.log(pits, newPits, bestScore, bestMove, depth, alpha, beta)
+    if (alpha >= beta) {
+      break;
+    }
+  }
+  return [bestMove as number, bestScore];
+}
+
+const minimax = (gameState: GameState, wasEmpty: boolean, pits: number[], totalPits: number, mancalaPits: MancalaPits, depth: number, alpha: number, beta:number) => {
+  const maxDepth = 12 
+  if (depth === maxDepth || checkWinner(pits, totalPits, gameState)) {
+    return evaluateScore(gameState, pits, mancalaPits);
+  }
+  const nextState = wasEmpty ? gameState : 1 - gameState 
+  const [, bestScore] = getNextMove(nextState, pits, mancalaPits,totalPits,depth, alpha,beta)
+  return bestScore
+}
+
+
+
+

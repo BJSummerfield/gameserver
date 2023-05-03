@@ -76,16 +76,17 @@ export const handleEmptyPlayerPit = (
   mancalaPits: MancalaPits,
   gameState: GameState
 ) => {
-  const newPits = [...pits];
-  if (
+  let newPits = [...pits];
+  const emptyPit =
     isValidPit(totalPits, gameState, index) &&
     pits[index] === 1
-  ) {
+
+  if (emptyPit) {
     const inverseIndex = getInversePit(totalPits, index);
     const { capturedPits } = captureInverseIndex(pits, index, inverseIndex, mancalaPits[gameState]);
-    return capturedPits;
+    newPits = [...capturedPits]
   }
-  return newPits;
+  return { newPits, wasEmpty: emptyPit };
 };
 
 
