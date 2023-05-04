@@ -13,7 +13,7 @@ import { getNextMove } from './ai';
 
 export const useMancala = () => {
   const [totalPits] = useState<number>(2)
-  const [startingStones] = useState<number>(4)
+  const [startingStones] = useState<number>(1)
   const [pits, setPits] = useState<number[]>(initialPits(totalPits, startingStones));
   const [gameState, setGameState] = useState<number>(GameState.PlayerOne)
   const rows = splitPits(pits, totalPits)

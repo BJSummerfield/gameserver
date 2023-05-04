@@ -11,13 +11,8 @@ const getMaximizingPlayer = (gameState: GameState) => {
 }
 
 const evaluateScore = (gameState: GameState, pits: number[], mancalaPits: MancalaPits) => {
-  const isMaximizingPlayer = getMaximizingPlayer(gameState)
-// 5 - 8 - 5
-  // if (isMaximizingPlayer) {
-    return pits[mancalaPits[gameState]] - pits[mancalaPits[1 - gameState]]
-  // } else {
-    // return pits[mancalaPits[1 - gameState]] - pits[mancalaPits[gameState]]
-  // }
+  console.log("EVAL: ", gameState, pits[mancalaPits[gameState]] - pits[mancalaPits[1 - gameState]])
+  return pits[mancalaPits[gameState]] - pits[mancalaPits[1 - gameState]]
 };
 
 const getPossibleMoves = (gameState: GameState, pits: number[], totalPits: number) => {
@@ -71,13 +66,14 @@ export const getNextMove = (
   return [bestMove as number, bestScore];
 }
 
-const minimax = (gameState: GameState, wasEmpty: boolean, pits: number[], totalPits: number, mancalaPits: MancalaPits, depth: number, alpha: number, beta:number) => {
-  const maxDepth = 12 
-  if (depth === maxDepth || checkWinner(pits, totalPits, gameState)) {
+const minimax = (gameState: GameState, wasEmpty: boolean, pits: number[], totalPits: number, mancalaPits: MancalaPits, depth: number, alpha: number, beta: number) => {
+  const maxDepth = 16
+  console.log(checkWinner(pits, totalPits, gameState))
+  if (depth === maxDepth || checkWinner(pits, totalPits, gameState) !== null) {
     return evaluateScore(gameState, pits, mancalaPits);
   }
-  const nextState = wasEmpty ? gameState : 1 - gameState 
-  const [, bestScore] = getNextMove(nextState, pits, mancalaPits,totalPits,depth, alpha,beta)
+  const nextState = wasEmpty ? gameState : 1 - gameState
+  const [, bestScore] = getNextMove(nextState, pits, mancalaPits, totalPits, depth, alpha, beta)
   return bestScore
 }
 
