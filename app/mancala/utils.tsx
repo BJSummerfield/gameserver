@@ -86,7 +86,7 @@ export const handleEmptyPlayerPit = (
     const { capturedPits } = captureInverseIndex(pits, index, inverseIndex, mancalaPits[gameState]);
     newPits = [...capturedPits]
   }
-  return { newPits, wasEmpty: emptyPit };
+  return newPits;
 };
 
 
