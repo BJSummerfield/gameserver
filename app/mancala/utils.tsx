@@ -34,17 +34,19 @@ export const checkWinner = (pits: number[], totalPits: number) => {
 };
 
 
-export const handleWinner = (pits: number[], totalPits: number, mancalaPits: MancalaPits, winner: GameState) => {
-  const newPits = [...pits];
-  const loser = 1 - winner
+export const getTotalStonesForPlayer = (pitRows: Rows, gameState: GameState) => {
+  return pitRows[gameState].reduce((a, b) => a + b);
+};
 
-  for (let index = 0; index < newPits.length; index++) {
-    if (isValidPit(totalPits, loser, index)) {
-      newPits[mancalaPits[loser]] += newPits[index];
-      newPits[index] = 0;
-    }
-  }
-  return newPits;
+export const handleWinner = (pits: number[], totalPits: number, mancalaPits: MancalaPits) => {
+  const newPits = [...pits];
+  const pitRows = splitPits(newPits, totalPits)
+  const finalPits = initialPits(totalPits, 0) 
+  const totalStonesPlayerOne = getTotalStonesForPlayer(pitRows, GameState.PlayerOne);
+  const totalStonesPlayerTwo = getTotalStonesForPlayer(pitRows, GameState.PlayerTwo);
+  finalPits[mancalaPits[GameState.PlayerOne]] = totalStonesPlayerOne + pits[mancalaPits[GameState.PlayerOne]]
+  finalPits[mancalaPits[GameState.PlayerTwo]] = totalStonesPlayerTwo + pits[mancalaPits[GameState.PlayerTwo]]
+  return finalPits;
 };
 
 export const distributeStones = (

@@ -5,7 +5,8 @@ import {
   distributeStones,
   handleEmptyPlayerPit,
   handleWinner,
-  splitPits
+  splitPits,
+  getTotalStonesForPlayer
 } from './utils'
 
 const getMaximizingPlayer = (gameState: GameState) => {
@@ -16,10 +17,6 @@ const getMancalaDifference = (pits: number[], mancalaPits: MancalaPits) => {
   const playerTwoMancala = pits[mancalaPits[GameState.PlayerTwo]];
   const playerOneMancala = pits[mancalaPits[GameState.PlayerOne]];
   return playerTwoMancala - playerOneMancala;
-};
-
-const getTotalStonesForPlayer = (pitRows: Rows, gameState: GameState) => {
-  return pitRows[gameState].reduce((a, b) => a + b);
 };
 
 const getStonesDifference = (pitRows: Rows) => {
