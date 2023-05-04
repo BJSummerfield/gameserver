@@ -3,7 +3,6 @@ import React from 'react';
 import Board from './Board';
 import styles from './page.module.css';
 import { useMancala } from './useMancala'
-// import CircularProgress from '@mui/material/CircularProgress'
 
 export default function Mancala() {
   const {
