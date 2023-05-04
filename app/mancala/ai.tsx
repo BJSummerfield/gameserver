@@ -5,18 +5,20 @@ import {
   distributeStones,
   handleEmptyPlayerPit,
   handleWinner,
+  splitPits
 } from './utils'
 
 const getMaximizingPlayer = (gameState: GameState) => {
   return gameState == GameState.PlayerTwo
 }
 
-const evaluateScore = (pits: number[], mancalaPits: MancalaPits, depth: number) => {
+const evaluateScore = (pits: number[], mancalaPits: MancalaPits, depth: number, totalPits: number) => {
   const playerTwoMancala = pits[mancalaPits[GameState.PlayerTwo]];
   const playerOneMancala = pits[mancalaPits[GameState.PlayerOne]];
   const mancalaDifference = playerTwoMancala - playerOneMancala;
-  const totalStonesPlayerOne = pits.slice(0, mancalaPits[GameState.PlayerOne]).reduce((a, b) => a + b);
-  const totalStonesPlayerTwo = pits.slice(mancalaPits[GameState.PlayerOne] + 1, mancalaPits[GameState.PlayerTwo]).reduce((a, b) => a + b);
+  const pitRows = splitPits(pits, totalPits)
+  const totalStonesPlayerOne = pitRows[GameState.PlayerOne].reduce((a, b) => a + b);
+  const totalStonesPlayerTwo = pitRows[GameState.PlayerTwo].reduce((a, b) => a + b);
   const stonesDifference = totalStonesPlayerTwo - totalStonesPlayerOne;
   const score = mancalaDifference * 10 + stonesDifference - depth;
   return score;
@@ -100,7 +102,7 @@ const calculateScore = (
 
   // If the maximum depth is reached or there is a winner, return the evaluated score
   if (depth === maxDepth || isWinner !== null) {
-    return evaluateScore(newPits, mancalaPits, depth);
+    return evaluateScore(newPits, mancalaPits, depth, totalPits);
   }
 
   // Determine the next state based on whether the last pit was a mancala pit for the current player
