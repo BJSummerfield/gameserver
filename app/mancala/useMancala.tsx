@@ -15,7 +15,7 @@ export const useMancala = () => {
   const [totalPits] = useState<number>(6)
   const [startingStones] = useState<number>(4)
   const [pits, setPits] = useState<number[]>(initialPits(totalPits, startingStones));
-  const [gameState, setGameState] = useState<number>(GameState.PlayerOne)
+  const [gameState, setGameState] = useState<GameState>(GameState.PlayerOne)
   const rows = splitPits(pits, totalPits)
 
   const mancalaPits: MancalaPits = {
@@ -65,10 +65,7 @@ export const useMancala = () => {
   const gameLoop = () => {
     if (gameState != GameState.GameOver && gameState != GameState.PlayerOne) {
       const [index,] = getNextMove(gameState, pits, mancalaPits, totalPits);
-      console.log("Player Two Move: ",index)
       selectPit(index);
-    } else {
-      console.log("PlayerOne", getNextMove(gameState, pits, mancalaPits, totalPits))
     }
   };
 

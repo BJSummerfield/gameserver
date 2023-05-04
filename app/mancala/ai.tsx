@@ -11,8 +11,15 @@ const getMaximizingPlayer = (gameState: GameState) => {
   return gameState == GameState.PlayerTwo
 }
 
-const evaluateScore = (pits: number[], mancalaPits: MancalaPits) => {
-  return pits[mancalaPits[GameState.PlayerTwo]] - pits[mancalaPits[GameState.PlayerOne]]
+const evaluateScore = (pits: number[], mancalaPits: MancalaPits, depth: number) => {
+  const playerTwoMancala = pits[mancalaPits[GameState.PlayerTwo]];
+  const playerOneMancala = pits[mancalaPits[GameState.PlayerOne]];
+  const mancalaDifference = playerTwoMancala - playerOneMancala;
+  const totalStonesPlayerOne = pits.slice(0, mancalaPits[GameState.PlayerOne]).reduce((a, b) => a + b);
+  const totalStonesPlayerTwo = pits.slice(mancalaPits[GameState.PlayerOne] + 1, mancalaPits[GameState.PlayerTwo]).reduce((a, b) => a + b);
+  const stonesDifference = totalStonesPlayerTwo - totalStonesPlayerOne;
+  const score = mancalaDifference * 10 + stonesDifference - depth;
+  return score;
 };
 
 const getPossibleMoves = (gameState: GameState, pits: number[], totalPits: number) => {
@@ -85,7 +92,7 @@ const calculateScore = (
   alpha: number,
   beta: number
 ) => {
-  const maxDepth = 8;
+  const maxDepth = 10;
   const isWinner = checkWinner(pits, totalPits, gameState);
 
   // If there is a winner, update the pits accordingly
@@ -93,7 +100,7 @@ const calculateScore = (
 
   // If the maximum depth is reached or there is a winner, return the evaluated score
   if (depth === maxDepth || isWinner !== null) {
-    return evaluateScore(newPits, mancalaPits);
+    return evaluateScore(newPits, mancalaPits, depth);
   }
 
   // Determine the next state based on whether the last pit was a mancala pit for the current player
