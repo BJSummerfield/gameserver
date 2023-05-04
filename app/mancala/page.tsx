@@ -7,7 +7,6 @@ import { useMancala } from './useMancala'
 
 export default function Mancala() {
   const {
-    loading,
     mancalaPits,
     status,
     rows,
