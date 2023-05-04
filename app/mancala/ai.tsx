@@ -1,4 +1,4 @@
-import { GameState, MancalaPits } from './types';
+import { GameState, MancalaPits, Rows } from './types';
 import {
   checkWinner,
   isValidPit,
@@ -12,14 +12,26 @@ const getMaximizingPlayer = (gameState: GameState) => {
   return gameState == GameState.PlayerTwo
 }
 
-const evaluateScore = (pits: number[], mancalaPits: MancalaPits, depth: number, totalPits: number) => {
+const getMancalaDifference = (pits: number[], mancalaPits: MancalaPits) => {
   const playerTwoMancala = pits[mancalaPits[GameState.PlayerTwo]];
   const playerOneMancala = pits[mancalaPits[GameState.PlayerOne]];
-  const mancalaDifference = playerTwoMancala - playerOneMancala;
-  const pitRows = splitPits(pits, totalPits)
-  const totalStonesPlayerOne = pitRows[GameState.PlayerOne].reduce((a, b) => a + b);
-  const totalStonesPlayerTwo = pitRows[GameState.PlayerTwo].reduce((a, b) => a + b);
-  const stonesDifference = totalStonesPlayerTwo - totalStonesPlayerOne;
+  return playerTwoMancala - playerOneMancala;
+};
+
+const getTotalStonesForPlayer = (pitRows: Rows, gameState: GameState) => {
+  return pitRows[gameState].reduce((a, b) => a + b);
+};
+
+const getStonesDifference = (pitRows: Rows) => {
+  const totalStonesPlayerOne = getTotalStonesForPlayer(pitRows, GameState.PlayerOne);
+  const totalStonesPlayerTwo = getTotalStonesForPlayer(pitRows, GameState.PlayerTwo);
+  return totalStonesPlayerTwo - totalStonesPlayerOne;
+};
+
+const evaluateScore = (pits: number[], mancalaPits: MancalaPits, depth: number, totalPits: number) => {
+  const mancalaDifference = getMancalaDifference(pits, mancalaPits);
+  const pitRows = splitPits(pits, totalPits);
+  const stonesDifference = getStonesDifference(pitRows);
   const score = mancalaDifference * 10 + stonesDifference - depth;
   return score;
 };
