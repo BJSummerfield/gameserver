@@ -20,11 +20,15 @@ export const isValidPit = (totalPits: number, gameState: GameState, index: numbe
   }
 }
 
-export const checkWinner = (pits: number[], totalPits: number, gameState: GameState) => {
+export const checkWinner = (pits: number[], totalPits: number) => {
   const rows: Rows = splitPits(pits, totalPits);
-  const currentPlayerRowsEmpty = rows[gameState].every((pit) => pit === 0);
-  if (currentPlayerRowsEmpty) {
-    return gameState;
+  const playerOneRowsEmpty = rows[GameState.PlayerOne].every((pit) => pit === 0);
+  const playerTwoRowsEmpty = rows[GameState.PlayerTwo].every((pit) => pit === 0);
+
+  if (playerOneRowsEmpty) {
+    return GameState.PlayerTwo;
+  } else if (playerTwoRowsEmpty) {
+    return GameState.PlayerOne;
   }
   return null;
 };

@@ -35,7 +35,7 @@ export const useMancala = () => {
         setGameState(1 - gameState);
       }
 
-      const winner = checkWinner(updatedPits, totalPits, gameState);
+      const winner = checkWinner(updatedPits, totalPits);
       if (winner !== null) {
         const finalPits = handleWinner(updatedPits, totalPits, mancalaPits, winner);
         setPits(finalPits);

@@ -93,7 +93,7 @@ const calculateScore = (
   beta: number
 ) => {
   const maxDepth = 10;
-  const isWinner = checkWinner(pits, totalPits, gameState);
+  const isWinner = checkWinner(pits, totalPits);
 
   // If there is a winner, update the pits accordingly
   const newPits = isWinner !== null ? handleWinner(pits, totalPits, mancalaPits, isWinner) : [...pits];
